@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>העלאת CSV</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=4" />
   </head>
   <body>
     <main>
@@ -35,6 +35,9 @@
             <label for="github-token">GitHub Token (צריך הרשאת repo)</label>
             <input id="github-token" type="password" placeholder="ghp_..." />
           </div>
+          <p>
+            ודא שלטוקן יש הרשאה ל-Contents (write) במאגר, אחרת ההעלאה תיכשל.
+          </p>
           <button class="secondary" id="save-github" type="button">שמור הגדרות מאגר</button>
         </form>
       </section>
@@ -59,7 +62,7 @@
       </section>
     </main>
 
-    <script src="./csv.js"></script>
-    <script src="./upload.js"></script>
+    <script src="./csv.js?v=4"></script>
+    <script src="./upload.js?v=4"></script>
   </body>
 </html>
