@@ -9,7 +9,6 @@
     :root{
       --bg:#0b1020;
       --card:#111a33;
-      --card2:#0f1730;
       --text:#eaf0ff;
       --muted:#a9b4d6;
       --accent:#6ea8ff;
@@ -32,41 +31,16 @@
       min-height:100vh;
     }
 
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 28px 18px 60px;
-    }
-
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:18px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    .wrap{max-width: 980px; margin: 0 auto; padding: 28px 18px 60px;}
+    header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;}
+    .brand{display:flex; align-items:center; gap:12px;}
     .brand .dot{
       width:14px;height:14px;border-radius:50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       box-shadow: 0 0 0 6px rgba(110,168,255,.12);
     }
-    h1{
-      margin:0;
-      font-size: 18px;
-      letter-spacing:.2px;
-      font-weight: 750;
-    }
-    .sub{
-      margin:0;
-      color:var(--muted);
-      font-size: 13px;
-      margin-top:2px;
-    }
+    h1{margin:0; font-size: 18px; letter-spacing:.2px; font-weight: 750;}
+    .sub{margin:0; color:var(--muted); font-size: 13px; margin-top:2px;}
 
     .panel{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -76,17 +50,9 @@
       padding: 18px;
     }
 
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:stretch;
-    }
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:stretch;}
 
-    .inputWrap{
-      flex: 1 1 380px;
-      position:relative;
-    }
+    .inputWrap{flex: 1 1 380px; position:relative;}
     input[type="text"]{
       width:100%;
       padding: 14px 14px 14px 46px;
@@ -99,33 +65,23 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
     input[type="text"]::placeholder{color: rgba(233,240,255,.55)}
-    input[type="text"]:focus{
-      border-color: rgba(110,168,255,.55);
-      box-shadow: 0 0 0 6px rgba(110,168,255,.16);
-    }
+    input[type="text"]:focus{border-color: rgba(110,168,255,.55); box-shadow: 0 0 0 6px rgba(110,168,255,.16);}
 
     .scanIcon{
-      position:absolute;
-      left: 12px;
-      top:50%;
+      position:absolute; left: 12px; top:50%;
       transform: translateY(-50%);
-      width: 22px;
-      height: 22px;
-      opacity:.9;
-      pointer-events:none;
+      width: 22px; height: 22px;
+      opacity:.9; pointer-events:none;
       filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
     }
 
     button{
-      border:0;
-      border-radius: 14px;
+      border:0; border-radius: 14px;
       padding: 14px 16px;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 15px; font-weight: 700;
       cursor:pointer;
       transition: transform .08s ease, filter .15s ease, opacity .2s ease;
-      user-select:none;
-      white-space:nowrap;
+      user-select:none; white-space:nowrap;
     }
     button:active{transform: translateY(1px)}
     .btnPrimary{
@@ -168,40 +124,18 @@
       animation: spin 1s linear infinite;
     }
     @keyframes spin {to{transform:rotate(360deg)}}
-
-    .error{
-      color: #ffd6d6;
-    }
+    .error{color: #ffd6d6;}
     .error .pill{
       border-color: rgba(255,107,107,.45);
       background: rgba(255,107,107,.10);
       color: #ffd6d6;
     }
 
-    /* Labels preview area */
-    .labelsWrap{
-      margin-top: 16px;
-      display:none;
-    }
-    .labelsHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
-    }
-    .labelsHead h2{
-      margin:0;
-      font-size: 15px;
-      font-weight: 780;
-    }
-    .labelsGrid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-    }
+    .labelsWrap{margin-top: 16px; display:none;}
+    .labelsHead{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 10px;}
+    .labelsHead h2{margin:0; font-size: 15px; font-weight: 780;}
+    .labelsGrid{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;}
 
-    /* Label card (print-friendly) */
     .label{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border: 1px solid var(--label-border);
@@ -223,35 +157,16 @@
     }
     .label > *{position:relative; z-index:1}
 
-    .labelTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .logoBox{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
+    .labelTop{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom: 10px;}
+    .logoBox{display:flex; align-items:center; gap:10px; min-width:0;}
     .logoBox img{
-      width: 54px;
-      height: 54px;
-      object-fit: contain;
+      width: 54px; height: 54px; object-fit: contain;
       background: rgba(255,255,255,.07);
       border: 1px solid rgba(255,255,255,.14);
       border-radius: 14px;
       padding: 8px;
     }
-    .labelMeta{
-      text-align:left;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      align-items:flex-end;
-    }
+    .labelMeta{text-align:left; display:flex; flex-direction:column; gap:6px; align-items:flex-end;}
     .counter{
       font-weight: 800;
       font-size: 12px;
@@ -262,24 +177,14 @@
       color: var(--text);
     }
 
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top: 8px;
-    }
+    .kv{display:grid; grid-template-columns: 1fr; gap:10px; margin-top: 8px;}
     .kvRow{
       background: rgba(10,14,28,.35);
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 14px;
       padding: 10px 12px;
     }
-    .k{
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 2px;
-      font-weight: 650;
-    }
+    .k{color: var(--muted); font-size: 12px; margin-bottom: 2px; font-weight: 650;}
     .v{
       font-size: 18px;
       font-weight: 850;
@@ -288,26 +193,14 @@
       word-break: break-word;
       line-height: 1.15;
     }
+    .tinyNote{margin-top: 10px; color: rgba(233,240,255,.55); font-size: 12px;}
 
-    .tinyNote{
-      margin-top: 10px;
-      color: rgba(233,240,255,.55);
-      font-size: 12px;
-    }
-
-    /* Print styles */
     @media print{
-      body{
-        background:#fff !important;
-        color:#000 !important;
-      }
+      body{background:#fff !important; color:#000 !important;}
       .wrap{max-width:none; padding:0; margin:0}
       header, .panel, .labelsHead, .status, .noPrint{display:none !important;}
       .labelsWrap{display:block !important; margin:0 !important;}
-      .labelsGrid{
-        grid-template-columns: 1fr !important;
-        gap: 0 !important;
-      }
+      .labelsGrid{grid-template-columns: 1fr !important; gap: 0 !important;}
       .label{
         page-break-after: always;
         border: 1px solid #000 !important;
@@ -317,21 +210,11 @@
         min-height: auto !important;
       }
       .label::before{display:none !important;}
-      .kvRow{
-        border: 1px solid #000 !important;
-        background:#fff !important;
-      }
+      .kvRow{border: 1px solid #000 !important; background:#fff !important;}
       .k{color:#000 !important}
       .v{color:#000 !important}
-      .logoBox img{
-        border: 1px solid #000 !important;
-        background:#fff !important;
-      }
-      .counter{
-        border: 1px solid #000 !important;
-        background:#fff !important;
-        color:#000 !important;
-      }
+      .logoBox img{border: 1px solid #000 !important; background:#fff !important;}
+      .counter{border: 1px solid #000 !important; background:#fff !important; color:#000 !important;}
     }
   </style>
 </head>
@@ -343,7 +226,7 @@
         <div class="dot"></div>
         <div>
           <h1>חיפוש ברקוד והפקת מדבקות</h1>
-          <p class="sub">סריקה בשדה → חיפוש אוטומטי → יצירת תצוגת הדפסה</p>
+          <p class="sub">סריקה → חיפוש אוטומטי | הקלדה ידנית → חיפוש בלחיצה</p>
         </div>
       </div>
       <div class="noPrint" style="display:flex; gap:10px; align-items:center;">
@@ -394,12 +277,17 @@
     // === Config ===
     const WEBHOOK_URL = "https://hook.integrator.boost.space/36qda98lb8qyzgj53xuqnsi8igbugnxr";
 
-    // Polling behavior: when server returns 200 (no data yet), we retry until we get 201 with JSON.
-    const POLL_INTERVAL_MS = 900;
-    const POLL_TIMEOUT_MS  = 20000; // 20s then fail
+    // דרישה: אם אין 201 עם נתונים תוך 2 שניות => שגיאה
+    const POLL_TIMEOUT_MS  = 2000;
 
-    // Auto-submit behavior (scanner-friendly)
-    const DEBOUNCE_MS = 220; // if scanner doesn't send Enter, this still submits after brief pause
+    // כדי להספיק בתוך 2 שניות, פולינג מהיר יחסית
+    const POLL_INTERVAL_MS = 250;
+
+    // זיהוי "סריקה" מול "הקלדה ידנית"
+    // רוב הסורקים מזינים את כל המחרוזת מהר מאוד (עשרות מילישניות לכל התו),
+    // בעוד הקלדה ידנית איטית בהרבה.
+    const SCAN_MAX_TOTAL_MS = 220;   // כל הקלט הושלם מהר מזה => סריקה
+    const SCAN_MIN_LEN      = 4;     // כדי לא לטריגר על הקלדה של 1-2 תווים
 
     // === Elements ===
     const barcodeInput = document.getElementById("barcodeInput");
@@ -412,8 +300,12 @@
     const printBtn     = document.getElementById("printBtn");
     const backBtn      = document.getElementById("backBtn");
 
-    let debounceTimer = null;
     let activeAbortController = null;
+
+    // state for scan detection
+    let firstKeyTime = null;
+    let lastKeyTime = null;
+    let keyCount = 0;
 
     function setStatus(text, {loading=false, error=false} = {}){
       statusEl.className = "status" + (error ? " error" : "");
@@ -494,10 +386,11 @@
       }
     }
 
+    async function safeReadText(res){
+      try { return (await res.text())?.slice(0, 200); } catch { return ""; }
+    }
+
     async function postAndMaybeGetData(barcode, signal){
-      // We send POST with the barcode.
-      // If we get 201 -> JSON data.
-      // If we get 200 -> no data yet (per your spec) and we'll poll by resending POST until 201.
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -514,13 +407,8 @@
         return { done: false, data: null };
       }
 
-      // Any other status = error
       const txt = await safeReadText(res);
       throw new Error(`שגיאה מהשרת: ${res.status}${txt ? " - " + txt : ""}`);
-    }
-
-    async function safeReadText(res){
-      try { return (await res.text())?.slice(0, 200); } catch { return ""; }
     }
 
     async function runSearch(){
@@ -531,7 +419,7 @@
         return;
       }
 
-      // Cancel previous run
+      // Cancel previous
       if(activeAbortController){
         activeAbortController.abort();
       }
@@ -541,26 +429,22 @@
       clearBtn.disabled = true;
 
       const startedAt = Date.now();
-      setStatus("נשלח... ממתין לנתונים", {loading:true});
+      setStatus("נשלח... ממתין לסטטוס 201", {loading:true});
 
       try{
         // First attempt
         let result = await postAndMaybeGetData(barcode, activeAbortController.signal);
 
-        // Poll until 201 or timeout
+        // Poll quickly until we get 201 or timeout at 2 seconds total
         while(!result.done){
-          if(Date.now() - startedAt > POLL_TIMEOUT_MS){
-            throw new Error("עבר זמן ההמתנה לנתונים (Timeout).");
+          if(Date.now() - startedAt >= POLL_TIMEOUT_MS){
+            throw new Error("לא התקבל סטטוס 201 עם נתונים תוך 2 שניות.");
           }
           await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
-          setStatus("ממתין לנתונים...", {loading:true});
           result = await postAndMaybeGetData(barcode, activeAbortController.signal);
         }
 
         const payload = result.data || {};
-        // Expected:
-        // { packages_quantity: 3, wp_order_id: "1234", driver_str: "משה כהן" }
-
         buildLabels({
           barcode,
           wp_order_id: payload.wp_order_id ?? "",
@@ -572,10 +456,7 @@
         showLabelsView();
 
       }catch(err){
-        if(err?.name === "AbortError"){
-          // Silent cancel
-          return;
-        }
+        if(err?.name === "AbortError") return;
         setStatus(err?.message || "שגיאה לא ידועה", {error:true});
       }finally{
         searchBtn.disabled = false;
@@ -583,46 +464,75 @@
       }
     }
 
+    // === Scan detection ===
+    function resetTypingProfile(){
+      firstKeyTime = null;
+      lastKeyTime = null;
+      keyCount = 0;
+    }
+
+    function isLikelyScan(){
+      const v = (barcodeInput.value || "").trim();
+      if(v.length < SCAN_MIN_LEN) return false;
+      if(firstKeyTime == null || lastKeyTime == null) return false;
+      const total = lastKeyTime - firstKeyTime;
+      return total > 0 && total <= SCAN_MAX_TOTAL_MS;
+    }
+
     // === Events ===
     searchBtn.addEventListener("click", runSearch);
 
     clearBtn.addEventListener("click", () => {
       barcodeInput.value = "";
+      resetTypingProfile();
       setStatus("");
       barcodeInput.focus();
     });
 
-    backBtn.addEventListener("click", () => {
-      showSearchView();
-    });
+    backBtn.addEventListener("click", () => showSearchView());
 
-    // Button requested: "leave empty for now"
+    // נשאר ריק כרגע כמו שביקשת
     printBtn.addEventListener("click", () => {
-      // intentionally empty (placeholder)
-      // Example later: window.print();
+      // intentionally empty placeholder
+      // later: window.print();
     });
 
-    // Scanner-friendly: Enter triggers immediately
+    // נבנה פרופיל הקלדה/סריקה לפי keydown (כדי להבדיל מהדבקה/אוטופיל)
     barcodeInput.addEventListener("keydown", (e) => {
+      const now = performance.now();
+
+      // אם זה התו הראשון בסשן
+      if(firstKeyTime == null) firstKeyTime = now;
+      lastKeyTime = now;
+
+      // נספור רק תווים "אמיתיים"
+      if(e.key && e.key.length === 1) keyCount++;
+
+      // הרבה סורקים שולחים Enter בסוף -> במקרה כזה נריץ רק אם זו סריקה
       if(e.key === "Enter"){
         e.preventDefault();
-        clearTimeout(debounceTimer);
-        runSearch();
+        const shouldAutoRun = isLikelyScan();
+        resetTypingProfile();
+
+        if(shouldAutoRun){
+          runSearch();
+        }else{
+          // הקלדה ידנית: Enter לא מריץ. רק כפתור חיפוש.
+          setStatus("הוקלד ידנית — לחץ על חיפוש", {loading:false});
+        }
       }
     });
 
-    // Also: auto-submit shortly after input stops (helps scanners that don't send Enter)
-    barcodeInput.addEventListener("input", () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        const v = (barcodeInput.value || "").trim();
-        if(v.length > 0){
-          runSearch();
-        }
-      }, DEBOUNCE_MS);
+    // אם המשתמש מקליד לאט (ידני) – לא מריצים כלום.
+    // אם זו סריקה בלי Enter (נדיר, אבל קיים) – נריץ אחרי blur/Change רק אם זה נראה סריקה.
+    barcodeInput.addEventListener("change", () => {
+      if(isLikelyScan()){
+        runSearch();
+      }
+      resetTypingProfile();
     });
 
-    // Auto focus on load
+    // Focus on load
     window.addEventListener("load", () => barcodeInput.focus());
   </script>
 </body>
