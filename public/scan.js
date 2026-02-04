@@ -24,6 +24,30 @@ function forceHideModal() {
 
 forceHideModal();
 
+function getGithubConfig() {
+  return {
+    owner: localStorage.getItem("githubOwner") || "",
+    repo: localStorage.getItem("githubRepo") || "",
+    branch: localStorage.getItem("githubBranch") || "main",
+    path: localStorage.getItem("githubPath") || "",
+  };
+}
+
+async function fetchCsvFromGithub() {
+  const config = getGithubConfig();
+  if (!config.owner || !config.repo || !config.path) {
+    throw new Error("יש להגדיר פרטי מאגר בדף העלאת ה-CSV.");
+  }
+
+  const rawUrl = `https://raw.githubusercontent.com/${config.owner}/${config.repo}/${config.branch}/${config.path}`;
+  const response = await fetch(rawUrl, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("לא ניתן לטעון את קובץ ה-CSV מהמאגר.");
+  }
+
+  return response.text();
+}
+
 async function lookupBarcode() {
   const barcode = barcodeInput.value.trim();
   if (!barcode) {
@@ -34,21 +58,21 @@ async function lookupBarcode() {
   statusEl.textContent = "מחפש...";
   labelSection.classList.add("hidden");
 
-  const stored = localStorage.getItem("csvData");
-  if (!stored) {
-    statusEl.textContent = "לא נמצא קובץ CSV שמור. יש להעלות קובץ קודם.";
-    return;
-  }
-
   try {
-    const payload = JSON.parse(stored);
-    const match = payload.rows.find((row) => String(row[0]).trim() === barcode);
+    const content = await fetchCsvFromGithub();
+    const rows = parseCsv(content);
+    if (rows.length === 0) {
+      throw new Error("קובץ ה-CSV ריק.");
+    }
+
+    const [headers, ...dataRows] = rows;
+    const match = dataRows.find((row) => String(row[0]).trim() === barcode);
 
     if (!match) {
       throw new Error("ברקוד לא נמצא בקובץ.");
     }
 
-    const data = payload.headers.reduce((acc, header, index) => {
+    const data = headers.reduce((acc, header, index) => {
       acc[header || `עמודה ${index + 1}`] = match[index] ?? "";
       return acc;
     }, {});
@@ -98,6 +122,7 @@ printButton.addEventListener("click", () => {
 function openModal() {
   modal.classList.remove("hidden");
   modal.removeAttribute("hidden");
+  modal.style.display = "flex";
   codeStatus.textContent = "";
   codeInput.value = "";
   codeInput.focus();
@@ -106,6 +131,7 @@ function openModal() {
 function closeModal() {
   modal.classList.add("hidden");
   modal.setAttribute("hidden", "");
+  modal.style.display = "";
 }
 
 goUpload.addEventListener("click", () => {
@@ -155,20 +181,13 @@ if ("serviceWorker" in navigator) {
 }
 
 function updateCsvStatus() {
-  const stored = localStorage.getItem("csvData");
-  if (!stored) {
-    csvStatus.textContent = "אין קובץ CSV שמור במכשיר.";
+  const config = getGithubConfig();
+  if (!config.owner || !config.repo || !config.path) {
+    csvStatus.textContent = "אין הגדרות מאגר. יש להגדיר בדף העלאת CSV.";
     return;
   }
 
-  try {
-    const payload = JSON.parse(stored);
-    csvStatus.textContent = `קובץ פעיל: ${payload.filename || "ללא שם"} | שורות: ${
-      payload.rows?.length ?? 0
-    }`;
-  } catch (error) {
-    csvStatus.textContent = "לא ניתן לקרוא את הקובץ השמור.";
-  }
+  csvStatus.textContent = `מאגר פעיל: ${config.owner}/${config.repo} | קובץ: ${config.path}`;
 }
 
 updateCsvStatus();

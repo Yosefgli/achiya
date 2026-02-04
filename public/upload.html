@@ -14,6 +14,32 @@
       </header>
 
       <section class="card">
+        <form id="github-form" class="grid">
+          <div>
+            <label for="github-owner">בעלים (Owner)</label>
+            <input id="github-owner" type="text" placeholder="username או ארגון" />
+          </div>
+          <div>
+            <label for="github-repo">שם מאגר (Repo)</label>
+            <input id="github-repo" type="text" placeholder="create-sticker-achiya" />
+          </div>
+          <div>
+            <label for="github-branch">ענף (Branch)</label>
+            <input id="github-branch" type="text" placeholder="main" />
+          </div>
+          <div>
+            <label for="github-path">נתיב קובץ CSV במאגר</label>
+            <input id="github-path" type="text" placeholder="data/stickers.csv" />
+          </div>
+          <div>
+            <label for="github-token">GitHub Token (צריך הרשאת repo)</label>
+            <input id="github-token" type="password" placeholder="ghp_..." />
+          </div>
+          <button class="secondary" id="save-github" type="button">שמור הגדרות מאגר</button>
+        </form>
+      </section>
+
+      <section class="card">
         <form id="upload-form">
           <div class="grid">
             <div>
@@ -28,8 +54,7 @@
           העלאה של קובץ חדש תחליף את הקובץ הקיים במערכת, גם אם שם הקובץ שונה.
         </p>
         <p>
-          הקובץ נשמר מקומית בדפדפן לצורך חיפוש ברקודים, כך שהמערכת עובדת גם ב-GitHub
-          Pages ללא שרת.
+          הקובץ נשמר במאגר GitHub כדי שניתן יהיה לגשת אליו מכל מכשיר.
         </p>
       </section>
     </main>

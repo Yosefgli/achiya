@@ -1,4 +1,4 @@
-const CACHE_NAME = "barcode-label-v2";
+const CACHE_NAME = "barcode-label-v3";
 const ASSETS = [
   "./",
   "./scan.html",
