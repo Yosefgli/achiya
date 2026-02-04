@@ -17,6 +17,13 @@ const codeStatus = document.querySelector("#code-status");
 const installButton = document.querySelector("#install-button");
 let deferredPrompt = null;
 
+function forceHideModal() {
+  modal.classList.add("hidden");
+  modal.setAttribute("hidden", "");
+}
+
+forceHideModal();
+
 async function lookupBarcode() {
   const barcode = barcodeInput.value.trim();
   if (!barcode) {
