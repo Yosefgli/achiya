@@ -335,12 +335,17 @@
     }
 
     function showSearchView(){
-      labelsWrap.style.display = "none";
-      document.querySelectorAll(".panel, header").forEach(el => el.style.display = "");
-      labelsGrid.innerHTML = "";
-      setStatus("");
-      barcodeInput.focus();
-    }
+    labelsWrap.style.display = "none";
+    document.querySelectorAll(".panel, header").forEach(el => el.style.display = "");
+    labelsGrid.innerHTML = "";
+    setStatus("");
+
+    // ✅ איפוס הברקוד כשחוזרים לחיפוש
+    barcodeInput.value = "";
+    resetTypingProfile();
+
+    barcodeInput.focus();
+  }
 
     function buildLabels({ barcode, wp_order_id, driver_str, packages_quantity }){
       const total = Number(packages_quantity || 1);
