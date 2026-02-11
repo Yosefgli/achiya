@@ -2,13 +2,17 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Label</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generate PDF (Client) → Send Base64 to Webhook</title>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
     :root{
-      /* תשנה כאן אם צריך גודל אחר להדפסה */
-      --size: 190mm;
+      /* גודל המדבקה (PDF) */
+      --size: 100mm;
 
       --border-outer: 2px;
       --border-inner: 1.5px;
@@ -29,20 +33,21 @@
       display:flex;
       justify-content:center;
       align-items:flex-start;
+      gap:16px;
+      flex-wrap: wrap;
     }
 
-    .label{
+    /* ===== LABEL ===== */
+    #label{
       width:var(--size);
       height:var(--size);
       background:#fff;
       border:var(--border-outer) solid var(--ink);
       display:grid;
-
-      /* פרופורציות שנמדדו מהתמונה */
-      grid-template-rows: 0.498fr 0.376fr 0.126fr;
+      grid-template-rows: 0.498fr 0.376fr 0.126fr; /* כמו התמונה */
     }
 
-    /* שורה עליונה */
+    /* TOP */
     .top{
       display:grid;
       grid-template-columns: 0.339fr 0.661fr;
@@ -52,7 +57,7 @@
 
     .top-left{
       display:grid;
-      grid-template-rows: 0.492fr 0.508fr; /* שתי קוביות כמעט שוות */
+      grid-template-rows: 0.492fr 0.508fr;
       border-left:var(--border-inner) solid var(--ink);
       min-height:0;
     }
@@ -72,7 +77,7 @@
       border-top:var(--border-inner) solid var(--ink);
     }
 
-    /* תא לוגו */
+    /* LOGO */
     .logo-cell{
       display:flex;
       align-items:center;
@@ -87,7 +92,7 @@
       display:block;
     }
 
-    /* שורה אמצעית */
+    /* MID */
     .mid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -98,7 +103,7 @@
       border-left:var(--border-inner) solid var(--ink);
     }
 
-    /* שורה תחתונה */
+    /* BOTTOM */
     .bottom{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -108,77 +113,364 @@
       border-left:var(--border-inner) solid var(--ink);
     }
 
-    /* טיפוגרפיה */
-    .t-small{ font-size: clamp(14px, 2.1vw, 22px); }
-    .t-med  { font-size: clamp(18px, 3.0vw, 30px); font-weight:700; }
-    .t-big  { font-size: clamp(34px, 5.0vw, 60px); font-weight:700; }
+    /* Typography */
+    .t-small{ font-size: clamp(10px, 2.1vw, 16px); font-weight:500; }
+    .t-med  { font-size: clamp(12px, 3.0vw, 20px); font-weight:500; }
+    .t-big  { font-size: clamp(22px, 5.0vw, 38px); font-weight:500; }
 
-    /* שורה "מספר משימה" קצת יותר צפופה כמו בתמונה */
-    .task .t-small{ font-weight:500; }
-    .task .t-med{ font-weight:500; }
+    /* Controls UI */
+    .panel{
+      background:#fff;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:12px;
+      min-width: 320px;
+      max-width: 520px;
+    }
+    .panel h3{ margin:0 0 10px; font-size:16px; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+    .grid label{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:12px;
+      color:#333;
+    }
+    input{
+      padding:8px 10px;
+      font-size:14px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      width:100%;
+    }
+    .controls{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+    button{
+      padding:10px 14px;
+      font-size:14px;
+      cursor:pointer;
+      border:1px solid #111;
+      background:#111;
+      color:#fff;
+      border-radius:10px;
+    }
+    button.secondary{
+      background:#fff;
+      color:#111;
+    }
+    .status{
+      margin-top:10px;
+      font-size:13px;
+      white-space:pre-wrap;
+      color:#111;
+    }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      color:#444;
+      line-height:1.4;
+    }
 
-    /* הדפסה */
     @media print{
       body{ background:#fff; padding:0; }
+      .panel{ display:none; }
       .wrap{ justify-content:flex-start; }
-      .label{ box-shadow:none; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="label">
 
+    <!-- LABEL PREVIEW -->
+    <div id="label">
       <!-- TOP -->
       <div class="top">
         <div class="top-left">
           <div class="cell task">
             <div class="t-small">מספר משימה</div>
-            <div class="t-med">22154001</div>
+            <div class="t-med" id="vTask">22154001</div>
           </div>
+
           <div class="cell">
-            <div class="t-med" style="font-size:clamp(28px,4.5vw,52px); font-weight:600;">ארגז</div>
-            <div class="t-big" style="font-weight:500;">3/3</div>
+            <div class="t-med" style="font-size:clamp(18px,4.5vw,30px); font-weight:600;" id="vType">ארגז</div>
+            <div class="t-big" style="font-weight:500;" id="vBox">3/3</div>
           </div>
         </div>
 
         <div class="logo-cell">
-          <!-- זה הלוגו מהתמונה (מובנה כ-base64) -->
-          <img alt="לוגו" src="logo.png" />
+          <img id="logoImg" alt="לוגו" src="logo.png" />
         </div>
       </div>
 
       <!-- MID -->
       <div class="mid">
         <div class="cell">
-          <div class="t-med" style="font-weight:500;">טלפון לקוח:</div>
-          <div class="t-med" style="font-weight:500;">0502262235</div>
+          <div class="t-med">טלפון לקוח:</div>
+          <div class="t-med" id="vPhone">0502262235</div>
         </div>
 
         <div class="cell">
-          <div class="t-med" style="font-weight:500;">כתובת:</div>
-          <div class="t-med" style="font-weight:500;">האורן 8</div>
-          <div class="t-med" style="font-weight:500;">ירושלים</div>
+          <div class="t-med">כתובת:</div>
+          <div class="t-med" id="vStreet">האורן 8</div>
+          <div class="t-med" id="vCity">ירושלים</div>
         </div>
       </div>
 
       <!-- BOTTOM -->
       <div class="bottom">
         <div class="cell" style="padding:6mm;">
-          <div class="t-big" style="font-weight:500;">7</div>
+          <div class="t-big" id="vNum">7</div>
         </div>
         <div class="cell" style="padding:6mm;">
-          <div class="t-big" style="font-weight:500;">יוסף</div>
+          <div class="t-big" id="vName">יוסף</div>
         </div>
       </div>
-
     </div>
+
+    <!-- INPUTS + ACTIONS -->
+    <div class="panel">
+      <h3>עריכת המדבקה</h3>
+
+      <div class="grid">
+        <label>מספר משימה
+          <input id="iTask" value="22154001" />
+        </label>
+
+        <label>סוג (למשל ארגז/שקית)
+          <input id="iType" value="ארגז" />
+        </label>
+
+        <label>ארגז (למשל 3/3)
+          <input id="iBox" value="3/3" />
+        </label>
+
+        <label>טלפון לקוח
+          <input id="iPhone" value="0502262235" />
+        </label>
+
+        <label>רחוב + מספר
+          <input id="iStreet" value="האורן 8" />
+        </label>
+
+        <label>עיר
+          <input id="iCity" value="ירושלים" />
+        </label>
+
+        <label>מספר גדול (שמאל למטה)
+          <input id="iNum" value="7" />
+        </label>
+
+        <label>שם גדול (ימין למטה)
+          <input id="iName" value="יוסף" />
+        </label>
+      </div>
+
+      <div class="hint">
+        לוגו: אם <b>logo.png</b> לא נטען בתוך ה-PDF, שים לוגו כ-Base64 בתוך הקוד (LOGO_DATA_URI) – זה הכי יציב.
+      </div>
+
+      <div class="controls">
+        <button id="btnSend">צור PDF ושלח לוובהוק</button>
+        <button id="btnDownload" class="secondary" type="button">צור PDF והורד</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
   </div>
 
   <script>
-    // אם אתה רוצה להחליף ערכים דינאמית:
-    // document.querySelector(...) וכו'
+    // ✅ החלף לכתובת ה-webhook שלך
+    const WEBHOOK_URL = "https://hook.integrator.boost.space/q78rwd42j34fi2nyhj5hguj6xlug3e5q";
+
+    // ✅ אופציונלי (מומלץ): שים כאן data URI של הלוגו כדי שלא יהיו בעיות CORS ב-PDF
+    // דוגמה: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+    const LOGO_DATA_URI = ""; // <- הדבק כאן אם צריך
+
+    function setStatus(msg){ document.getElementById("status").textContent = msg; }
+
+    function applyLogo(){
+      const img = document.getElementById("logoImg");
+      if (LOGO_DATA_URI && LOGO_DATA_URI.startsWith("data:image/")) {
+        img.src = LOGO_DATA_URI;
+      }
+    }
+
+    function updateLabelFromInputs(){
+      document.getElementById("vTask").textContent   = document.getElementById("iTask").value || "";
+      document.getElementById("vType").textContent   = document.getElementById("iType").value || "";
+      document.getElementById("vBox").textContent    = document.getElementById("iBox").value || "";
+      document.getElementById("vPhone").textContent  = document.getElementById("iPhone").value || "";
+      document.getElementById("vStreet").textContent = document.getElementById("iStreet").value || "";
+      document.getElementById("vCity").textContent   = document.getElementById("iCity").value || "";
+      document.getElementById("vNum").textContent    = document.getElementById("iNum").value || "";
+      document.getElementById("vName").textContent   = document.getElementById("iName").value || "";
+    }
+
+    function safeSlug(s){
+      return (s || "")
+        .trim()
+        .replace(/[^\w\u0590-\u05FF\- ]+/g, "")
+        .replace(/\s+/g, "-")
+        .slice(0, 50) || "label";
+    }
+
+    function waitForImages(el, timeoutMs = 4000){
+      const imgs = Array.from(el.querySelectorAll("img"));
+      if (imgs.length === 0) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const done = imgs.every(im => im.complete && im.naturalWidth > 0);
+          if (done) return resolve();
+          if (Date.now() - start > timeoutMs) return resolve(); // לא נתקעים לנצח
+          setTimeout(tick, 60);
+        };
+        tick();
+      });
+    }
+
+    async function generatePdfBase64FromElement(el){
+      // וידוא שהלוגו נטען (אם יש)
+      await waitForImages(el);
+
+      const scale = 2; // חד יותר
+      const canvas = await html2canvas(el, {
+        backgroundColor: "#ffffff",
+        scale,
+        useCORS: true
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: [100, 100]
+      });
+
+      pdf.addImage(imgData, "PNG", 0, 0, 100, 100);
+
+      const dataUriString = pdf.output("datauristring");
+      return dataUriString.split(",")[1];
+    }
+
+    async function sendPdfBase64ToWebhookNoCors(pdfBase64, fileName, meta){
+      const payload = {
+        fileName,
+        mimeType: "application/pdf",
+        pdfBase64,
+        meta
+      };
+
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    function downloadBase64Pdf(pdfBase64, filename){
+      const byteChars = atob(pdfBase64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function collectMeta(){
+      return {
+        taskNumber: document.getElementById("iTask").value,
+        type: document.getElementById("iType").value,
+        box: document.getElementById("iBox").value,
+        phone: document.getElementById("iPhone").value,
+        street: document.getElementById("iStreet").value,
+        city: document.getElementById("iCity").value,
+        bigNumber: document.getElementById("iNum").value,
+        bigName: document.getElementById("iName").value,
+        generatedAt: new Date().toISOString()
+      };
+    }
+
+    // init
+    applyLogo();
+    updateLabelFromInputs();
+
+    // live update
+    ["iTask","iType","iBox","iPhone","iStreet","iCity","iNum","iName"].forEach(id=>{
+      document.getElementById(id).addEventListener("input", updateLabelFromInputs);
+    });
+
+    document.getElementById("btnSend").addEventListener("click", async () => {
+      try{
+        if (!WEBHOOK_URL || WEBHOOK_URL.includes("PASTE_YOUR")){
+          setStatus("שים את כתובת הוובהוק בתוך WEBHOOK_URL בקוד.");
+          return;
+        }
+
+        updateLabelFromInputs();
+        setStatus("מייצר PDF...");
+
+        const el = document.getElementById("label");
+        const pdfBase64 = await generatePdfBase64FromElement(el);
+
+        const slug = safeSlug(document.getElementById("iTask").value || "task");
+        const fileName = `label-${slug}.pdf`;
+
+        const meta = collectMeta();
+
+        setStatus(
+          "PDF נוצר. שולח לוובהוק (no-cors)...\n" +
+          "שים לב: אין תשובה מהשרת בדפדפן.\n" +
+          `Base64 length: ${pdfBase64.length}`
+        );
+
+        await sendPdfBase64ToWebhookNoCors(pdfBase64, fileName, meta);
+
+        setStatus("נשלח. בדוק בצד הוובהוק אם התקבל.");
+      }catch(e){
+        setStatus("שגיאה:\n" + (e?.message || e));
+      }
+    });
+
+    document.getElementById("btnDownload").addEventListener("click", async () => {
+      try{
+        updateLabelFromInputs();
+        setStatus("מייצר PDF להורדה...");
+
+        const el = document.getElementById("label");
+        const pdfBase64 = await generatePdfBase64FromElement(el);
+
+        const slug = safeSlug(document.getElementById("iTask").value || "task");
+        const fileName = `label-${slug}.pdf`;
+
+        downloadBase64Pdf(pdfBase64, fileName);
+        setStatus(`ה-PDF נוצר וירד למחשב: ${fileName}\nBase64 length: ${pdfBase64.length}`);
+      }catch(e){
+        setStatus("שגיאה:\n" + (e?.message || e));
+      }
+    });
   </script>
 </body>
 </html>
