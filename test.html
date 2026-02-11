@@ -11,8 +11,8 @@
 
   <style>
     :root{
-      /* גודל המדבקה (PDF) */
-      --size: 100mm;
+      /* גודל המדבקה (תואם ל-PDF) */
+      --size: 101.6mm;
 
       --border-outer: 2px;
       --border-inner: 1.5px;
@@ -44,7 +44,7 @@
       background:#fff;
       border:var(--border-outer) solid var(--ink);
       display:grid;
-      grid-template-rows: 0.498fr 0.376fr 0.126fr; /* כמו התמונה */
+      grid-template-rows: 0.498fr 0.376fr 0.126fr;
     }
 
     /* TOP */
@@ -202,7 +202,7 @@
 
           <div class="cell">
             <div class="t-med" style="font-size:clamp(18px,4.5vw,30px); font-weight:600;" id="vType">ארגז</div>
-            <div class="t-big" style="font-weight:500;" id="vBox">3/3</div>
+            <div class="t-big" id="vBox">3/3</div>
           </div>
         </div>
 
@@ -292,9 +292,11 @@
     // ✅ החלף לכתובת ה-webhook שלך
     const WEBHOOK_URL = "https://hook.integrator.boost.space/q78rwd42j34fi2nyhj5hguj6xlug3e5q";
 
-    // ✅ אופציונלי (מומלץ): שים כאן data URI של הלוגו כדי שלא יהיו בעיות CORS ב-PDF
-    // דוגמה: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-    const LOGO_DATA_URI = ""; // <- הדבק כאן אם צריך
+    // ✅ הגדרת גודל אחת לכולם (לפי המדפסת שלך 4x4")
+    const LABEL_MM = 101.6;
+
+    // ✅ אופציונלי: הדבק Data URI של הלוגו כדי להימנע מבעיות טעינה/PDF
+    const LOGO_DATA_URI = ""; // "data:image/png;base64,..."
 
     function setStatus(msg){ document.getElementById("status").textContent = msg; }
 
@@ -333,7 +335,7 @@
         const tick = () => {
           const done = imgs.every(im => im.complete && im.naturalWidth > 0);
           if (done) return resolve();
-          if (Date.now() - start > timeoutMs) return resolve(); // לא נתקעים לנצח
+          if (Date.now() - start > timeoutMs) return resolve();
           setTimeout(tick, 60);
         };
         tick();
@@ -341,10 +343,9 @@
     }
 
     async function generatePdfBase64FromElement(el){
-      // וידוא שהלוגו נטען (אם יש)
       await waitForImages(el);
 
-      const scale = 2; // חד יותר
+      const scale = 2;
       const canvas = await html2canvas(el, {
         backgroundColor: "#ffffff",
         scale,
@@ -357,23 +358,34 @@
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
-        format: [101.6, 101.6]
+        format: [LABEL_MM, LABEL_MM]
       });
 
+      // גודל העמוד בפועל (מה ש-jsPDF באמת ייצר)
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, "PNG", 0, 0, 100, 100);
+      // ✅ מדביקים את התמונה בדיוק לגודל הדף – אין פערים/שוליים
+      pdf.addImage(imgData, "PNG", 0, 0, pageW, pageH);
+
+      // דוח מצב: גודל PDF + גודל ה-DOM שצולם
+      const rect = el.getBoundingClientRect();
+      const cssSize = getComputedStyle(el).width + " × " + getComputedStyle(el).height;
+
+      setStatus(
+        "נוצר PDF:\n" +
+        `• Page size (mm): ${pageW.toFixed(2)} × ${pageH.toFixed(2)}\n` +
+        `• Label CSS size: ${cssSize}\n` +
+        `• Label DOM px: ${Math.round(rect.width)} × ${Math.round(rect.height)}\n` +
+        "מחשב Base64..."
+      );
 
       const dataUriString = pdf.output("datauristring");
       return dataUriString.split(",")[1];
     }
 
     async function sendPdfBase64ToWebhookNoCors(pdfBase64, fileName, meta){
-      const payload = {
-        fileName,
-        mimeType: "application/pdf",
-        pdfBase64,
-        meta
-      };
+      const payload = { fileName, mimeType: "application/pdf", pdfBase64, meta };
 
       await fetch(WEBHOOK_URL, {
         method: "POST",
@@ -410,6 +422,7 @@
         city: document.getElementById("iCity").value,
         bigNumber: document.getElementById("iNum").value,
         bigName: document.getElementById("iName").value,
+        labelMm: LABEL_MM,
         generatedAt: new Date().toISOString()
       };
     }
@@ -438,18 +451,20 @@
 
         const slug = safeSlug(document.getElementById("iTask").value || "task");
         const fileName = `label-${slug}.pdf`;
-
         const meta = collectMeta();
 
         setStatus(
-          "PDF נוצר. שולח לוובהוק (no-cors)...\n" +
-          "שים לב: אין תשובה מהשרת בדפדפן.\n" +
+          document.getElementById("status").textContent + "\n\n" +
+          "PDF מוכן. שולח לוובהוק (no-cors)...\n" +
           `Base64 length: ${pdfBase64.length}`
         );
 
         await sendPdfBase64ToWebhookNoCors(pdfBase64, fileName, meta);
 
-        setStatus("נשלח. בדוק בצד הוובהוק אם התקבל.");
+        setStatus(
+          document.getElementById("status").textContent + "\n\n" +
+          "נשלח. בדוק בצד הוובהוק אם התקבל."
+        );
       }catch(e){
         setStatus("שגיאה:\n" + (e?.message || e));
       }
@@ -467,7 +482,11 @@
         const fileName = `label-${slug}.pdf`;
 
         downloadBase64Pdf(pdfBase64, fileName);
-        setStatus(`ה-PDF נוצר וירד למחשב: ${fileName}\nBase64 length: ${pdfBase64.length}`);
+
+        setStatus(
+          document.getElementById("status").textContent + "\n\n" +
+          `ה-PDF נוצר וירד למחשב: ${fileName}\nBase64 length: ${pdfBase64.length}`
+        );
       }catch(e){
         setStatus("שגיאה:\n" + (e?.message || e));
       }
