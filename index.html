@@ -730,6 +730,27 @@
       toggleInstallButton(false);
     });
 
+    installBtn.addEventListener("click", async () => {
+      if(!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if(choice?.outcome === "accepted"){
+        deferredInstallPrompt = null;
+        toggleInstallButton(false);
+      }
+    });
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      toggleInstallButton(isMobileDevice() && !isStandalone());
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      toggleInstallButton(false);
+    });
+
     clearBtn.addEventListener("click", () => {
       barcodeInput.value = "";
       resetTypingProfile();
